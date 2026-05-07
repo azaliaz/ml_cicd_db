@@ -24,3 +24,7 @@ data/.sklearn_cache/
 models/
 
 .dvc/cache/
+
+img
+README.md
+README1.md
