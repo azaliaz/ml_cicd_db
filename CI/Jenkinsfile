@@ -38,7 +38,10 @@ pipeline {
 
     stage('Push to Docker Hub') {
       when {
-        anyOf { branch 'main'; branch 'develop' }
+        expression {
+          def b = (env.BRANCH_NAME ?: env.GIT_BRANCH ?: '').toLowerCase()
+          return b.contains('main') || b.contains('develop')
+        }
       }
       steps {
         withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DH_USER', passwordVariable: 'DH_PASS')]) {
@@ -57,9 +60,9 @@ pipeline {
 
     stage('Trigger CD pipeline') {
       when {
-        allOf {
-          expression { return params.TRIGGER_CD }
-          anyOf { branch 'main'; branch 'develop' }
+        expression {
+          def b = (env.BRANCH_NAME ?: env.GIT_BRANCH ?: '').toLowerCase()
+          return params.TRIGGER_CD && (b.contains('main') || b.contains('develop'))
         }
       }
       steps {
