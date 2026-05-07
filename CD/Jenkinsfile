@@ -114,11 +114,10 @@ pipeline {
       steps {
         sh '''
           mkdir -p artifacts
-          docker run --rm --network host \
-            -e SCENARIO_BASE_URL="${SCENARIO_BASE_URL}" \
-            -v "$PWD/artifacts:/artifacts" \
-            --entrypoint python -w /app "${DOCKER_IMAGE}" \
-            scripts/run_scenarios.py --base-url "${SCENARIO_BASE_URL}" --report-json /artifacts/functional_report.json
+          docker exec "${APP_CONTAINER}" python scripts/run_scenarios.py \
+            --base-url "http://127.0.0.1:8000" \
+            --report-json /tmp/functional_report.json
+          docker cp "${APP_CONTAINER}:/tmp/functional_report.json" artifacts/functional_report.json
         '''
       }
     }
